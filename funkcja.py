@@ -39,19 +39,27 @@ def testy():
         blad = True
     assert blad
 
-    blad = False
-    try:
-        silnia_iter("abc")
-    except ValueError:
-        blad = True
-    assert blad
+    for funkcja in (silnia_iter, silnia_rek):
+        blad = False
+        try:
+            funkcja("abc")
+        except ValueError:
+            blad = True
+        assert blad
+
+        blad = False
+        try:
+            funkcja(2.5)
+        except ValueError:
+            blad = True
+        assert blad
 
     print("Testy OK")
 
 def main():
     print("Przyklady:")
     for x in (3, 5, 10):
-        print(f"{x}! = {silnia_iter(x)}")
+        print("{0}! = {1}".format(x, silnia_iter(x)))
 
     n_pomiar = 100
     powtorzenia = 1000
@@ -68,22 +76,26 @@ def main():
     t1 = time.ticks_ms()
     czas_rek = time.ticks_diff(t1, t0)
 
-    print(f"Wersja iteracyjna: {czas_iter} ms")
-    print(f"Wersja rekurencyjna: {czas_rek} ms")
+    print("Wersja iteracyjna: {0} ms".format(czas_iter))
+    print("Wersja rekurencyjna: {0} ms".format(czas_rek))
 
     while True:
         try:
-            liczba = int(input("Podaj liczbe calkowita wieksza od 0: "))
-            n = liczba
+            wejscie = input("Podaj liczbe calkowita (q to quit): ").strip()
+            if wejscie.lower() == "q":
+                break
+            n = int(wejscie)
             if n < 0:
                 print("Blad: liczba musi byc nieujemna")
                 continue
-            print(f"{n}! (iteracyjnie) = {silnia_iter(n)}")
-            print(f"{n}! (rekurencyjnie) = {silnia_rek(n)}")
+            print("{0}! (iteracyjnie) = {1}".format(n, silnia_iter(n)))
+            try:
+                print("{0}! (rekurencyjnie) = {1}".format(n, silnia_rek(n)))
+            except RecursionError:
+                print("Blad: przekroczono limit zaglebienia rekurencji dla silnia_rek({0})".format(n))
         except ValueError:
             print("Blad: wprowadzona wartosc nie jest liczba calkowita")
-        except (EOFError, KeyboardInterrupt):
-            break
 
-testy()
-main()
+if __name__ == "__main__":
+    testy()
+    main()
